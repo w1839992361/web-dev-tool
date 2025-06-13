@@ -1,6 +1,7 @@
 import { contextBridge,ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
+
 // Custom APIs for renderer
 const api = {
   getSubfolders: (dirPath) => ipcRenderer.invoke('list-subfolders', dirPath),
@@ -12,6 +13,14 @@ const api = {
 // just add to the DOM global.
 if (process.contextIsolated) {
   try {
+    contextBridge.exposeInMainWorld('electronStorage', {
+      get: (key) => localStorage.getItem(key),
+      set: (key, value) => localStorage.setItem(key, value),
+      remove: (key) => localStorage.removeItem(key),
+      clear: () => localStorage.clear()
+    });
+
+
     contextBridge.exposeInMainWorld('electronAPI', {
       minimize: () => ipcRenderer.send('window:minimize'),
       minihide: () => ipcRenderer.send('window:hide'),

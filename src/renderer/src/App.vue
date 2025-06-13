@@ -113,7 +113,7 @@ import Swal from "sweetalert2";
 const isMaximized = ref(false);
 const currentTime = ref("");
 
-let isHide = localStorage.getItem("isHide");
+let isHide = window.electronStorage.get('isHide');
 
 // 更新时间
 const updateTime = () => {
@@ -148,8 +148,7 @@ const toggleMaximize = () => {
 const close = () => {
   if (window.electronAPI) {
     let _window = window.electronAPI;
-    console.log(_window)
-    if (isHide == "null") {
+    if (isHide === null)  {
       Swal.fire({
         title: "确定关闭窗口？",
         text: "你可以选择最小化并记住选择，或直接关闭窗口。",
@@ -162,12 +161,13 @@ const close = () => {
       }).then((result) => {
         if (result.isConfirmed) {
           isHide = 1;
+          window.electronStorage.set('isHide', isHide);
           _window.minihide();
         } else if (result.isDenied) {
           isHide = 0;
+          window.electronStorage.set('isHide', isHide);
           _window.close();
         }
-        localStorage.setItem("isHide", isHide);
       });
     } else if (isHide == 1) {
       window.electronAPI.minihide();

@@ -213,7 +213,7 @@ const phpVersions = ref([
 window.api.getSubfolders("src/php").then(async (res) => {
   phpVersions.value = await Promise.all(
     await res.map(async (item, i) => {
-      const d = await window.api.getPhpInfo("./" + item.fullPath.replaceAll("\\", "/"));
+      const d = await window.api.getPhpInfo(item.fullPath.replaceAll("\\", "/"));
       // const dd = await window.api.getPhpExtensionStatus(
       //   `./${item.fullPath.replaceAll("\\", "/")}/php.exe`,
       //   `./${item.fullPath.replaceAll("\\", "/")}/ext`
@@ -223,8 +223,8 @@ window.api.getSubfolders("src/php").then(async (res) => {
         version: item.folderName.split("-")[1],
         active: false,
         path: item.fullPath,
-        mode:d.mode,
-        extensions:d.extensions
+        mode: d.mode,
+        extensions: d.extensions,
       };
     })
   );

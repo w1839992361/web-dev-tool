@@ -1,21 +1,35 @@
-import fs from 'fs';
+import fs from 'fs/promises'; // 使用Promise-based API
 import path from 'path';
-import { ipcMain } from 'electron';
+import { ipcMain, app } from 'electron';
 
-ipcMain.handle('list-subfolders', async (_event, dirPath) => {
-    try {
-        const subfolders = fs.readdirSync(dirPath).filter(name => {
-            const fullPath = path.join(dirPath, name);
-            return fs.statSync(fullPath).isDirectory();
-        });
-        console.log(subfolders)
-        return subfolders.map(item => {
-            return {
-                fullPath: path.join(dirPath, item),
-                folderName: item
-            }
-        });
-    } catch (err) {
-        return [];
-    }
+ipcMain.handle('list-subfolders', async (_event, relativePath) => {
+  try {
+    // 获取正确的基准路径
+    const basePath = process.env.NODE_ENV === 'development'
+      ? path.join(app.getAppPath(), relativePath)
+      : path.join(process.resourcesPath, relativePath);
+
+
+    const items = await fs.readdir(basePath, { withFileTypes: true });
+    
+    const subfolders = items
+      .filter(dirent => dirent.isDirectory())
+      .map(dirent => ({
+        fullPath: path.join(basePath, dirent.name),
+        folderName: dirent.name
+      }));
+
+    console.log('Found subfolders:', subfolders);
+    return subfolders;
+    
+  } catch (err) {
+    console.error('Error listing subfolders:', err);
+    
+    // 返回更详细的错误信息
+    return {
+      error: true,
+      message: err.message,
+      code: err.code
+    };
+  }
 });
