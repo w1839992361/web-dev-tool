@@ -124,7 +124,7 @@
         <div class="info-item">
           <span class="info-label">内存使用:</span>
           <span class="info-value">
-            {{ (systemInfo.mem.available / 1024 ** 3).toFixed(2) }} /
+            {{ (systemInfo.mem.used / 1024 ** 3).toFixed(2) }} /
             {{ (systemInfo.mem.total / 1024 ** 3).toFixed(2) }} GB
           </span>
         </div>
