@@ -1,5 +1,5 @@
 # electron-app
-2
+1
 An Electron application with Vue
 
 ## Recommended IDE Setup
